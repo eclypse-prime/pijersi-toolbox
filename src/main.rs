@@ -5,7 +5,7 @@ use std::{
     time::Instant,
 };
 
-use indicatif::ProgressBar;
+use indicatif::{ProgressBar, ProgressStyle};
 
 use pijersi_rs::{
     board::Board,
@@ -17,6 +17,9 @@ use pijersi_rs::{
 
 fn explore(board: &mut Board, exploration_depth: u64, positions: &mut HashSet<String>) {
     let (cells, player, half_moves, full_moves) = board.get_state();
+    if board.is_win() || board.is_draw() {
+        return
+    }
     let actions = available_player_actions(&board.cells, board.current_player);
     match exploration_depth {
         0 => (),
@@ -26,10 +29,12 @@ fn explore(board: &mut Board, exploration_depth: u64, positions: &mut HashSet<St
                 .take(actions[MAX_PLAYER_ACTIONS - 1] as usize)
             {
                 board.play(action).unwrap();
-                positions.insert(board.get_string_state());
-                board
-                    .set_state(&cells, player, half_moves, full_moves)
-                    .unwrap()
+                if !board.is_win() {
+                    positions.insert(board.get_string_state());
+                    board
+                        .set_state(&cells, player, half_moves, full_moves)
+                        .unwrap()
+                }
             }
         }
         _ => {
@@ -68,6 +73,7 @@ fn main() {
 
     let mut actions: Vec<(String, u64, i64)> = vec![];
     let progress_bar = ProgressBar::new(positions.len() as u64);
+    progress_bar.set_style(ProgressStyle::with_template("[{elapsed_precise}] [{wide_bar}] {pos}/{len} ({eta})").unwrap().progress_chars("#>-"));
     let start = Instant::now();
     for state_string in positions {
         board.set_string_state(&state_string).unwrap();
