@@ -90,7 +90,7 @@ fn main() {
     let start = Instant::now();
     let mut file = File::create("openings.txt").unwrap();
     for (state_string, action, score) in actions {
-        file.write_all(format!("{state_string}:{action};{score}\n").as_bytes())
+        file.write_all(format!("{state_string};{action};{score}\n").as_bytes())
             .unwrap();
     }
     println!("Positions saved in {:?}", start.elapsed())
