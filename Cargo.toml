@@ -5,6 +5,9 @@ edition = "2021"
 
 [dependencies]
 anyhow = "*"
+bincode = "*"
+clap = {version = "*", features = ["derive"]}
 indicatif = "*"
-
 pijersi-rs = {path = "../pijersi-rs"}
+serde = {version = "*", features = ["derive"]}
+serde_bytes = "*"
