@@ -1,6 +1,6 @@
 use std::{
     fs::File,
-    io::{BufRead, BufReader, BufWriter, ErrorKind, Read, Write},
+    io::{BufReader, BufWriter, ErrorKind, Read, Write},
     time::Instant,
 };
 
@@ -59,14 +59,27 @@ pub fn import_positions(file_path: &str) -> Vec<Position> {
     positions
 }
 
-pub fn export_positions(positions: &[Position], save_path: &str) {
+pub fn export_positions(positions: &[Position], save_path: &str, split: Option<u64>) {
     println!("Saving positions to file {save_path}...");
     let start = Instant::now();
-    let mut writer = BufWriter::new(File::create(save_path).unwrap());
-    for position in positions {
-        writer.write_all(&encode_position(position)).unwrap();
+    if let Some(n_files) = split {
+        let chunk_size = positions.len() / n_files as usize + 1;
+        let chunks = positions.chunks(chunk_size);
+        for (index, chunk) in chunks.enumerate() {
+            let mut writer = BufWriter::new(File::create(format!("{save_path}_{index}")).unwrap());
+            for position in chunk {
+                writer.write_all(&encode_position(position)).unwrap();
+            }
+        }
+        println!("Positions saved in {} chunks in {:?}", n_files, start.elapsed());
     }
-    println!("Positions saved in {:?}", start.elapsed());
+    else {
+        let mut writer = BufWriter::new(File::create(save_path).unwrap());
+        for position in positions {
+            writer.write_all(&encode_position(position)).unwrap();
+        }
+        println!("Positions saved in {:?}", start.elapsed());
+    }
 }
 
 pub fn import_responses(file_path: &str) -> Vec<Response> {

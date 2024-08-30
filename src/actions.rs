@@ -6,7 +6,7 @@ use std::{
 use indicatif::{ProgressBar, ProgressStyle};
 use pijersi_rs::{
     board::Board,
-    logic::{movegen::available_player_actions, INDEX_WIDTH}, search::eval::MAX_SCORE,
+    logic::{movegen::available_player_actions, translate::action_to_string, INDEX_WIDTH}, search::eval::MAX_SCORE,
 };
 
 use crate::structs::{Position, Response};
@@ -160,4 +160,31 @@ pub fn backtrack_responses(
     }
     println!("Responses calculated at new exploration depth {} and search depth {} in {:?}.", exploration_depth - 1, search_depth + 1, start.elapsed());
     lower_responses
+}
+
+pub fn inspect_position(position: &Position) {
+    let mut board: Board = Board::new();
+    board.options.verbose = false;
+    board.options.use_book = false;
+    board.init();
+
+    board.set_state(&position.cells, position.current_player, 0, 0).unwrap();
+    board.print();
+    println!();
+}
+
+pub fn inspect_response(response: &Response) {
+    let mut board: Board = Board::new();
+    board.options.verbose = false;
+    board.options.use_book = false;
+    board.init();
+
+    board.set_state(&response.position.cells, response.position.current_player, 0, 0).unwrap();
+    board.print();
+    println!("{}", board.current_player);
+    let action_string = action_to_string(&board.cells, response.action);
+    println!("{action_string}");
+    board.play(response.action).unwrap();
+    board.print();
+    println!();
 }
