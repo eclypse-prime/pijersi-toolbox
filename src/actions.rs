@@ -6,11 +6,11 @@ use std::{
 use indicatif::{ProgressBar, ProgressStyle};
 use pijersi_rs::{
     board::Board,
-    logic::{movegen::available_player_actions, translate::action_to_string, INDEX_WIDTH}, search::eval::MAX_SCORE,
+    logic::{movegen::available_player_actions, translate::action_to_string, INDEX_WIDTH},
+    search::eval::MAX_SCORE,
 };
 
 use crate::structs::{Position, Response};
-
 
 pub fn get_positions(exploration_depth: u64) -> Vec<Position> {
     let mut board: Board = Board::new();
@@ -70,10 +70,7 @@ fn _get_positions(board: &mut Board, exploration_depth: u64) -> HashSet<Position
     }
 }
 
-pub fn get_responses_at_depth(
-    positions: &[Position],
-    search_depth: u64,
-) -> Vec<Response> {
+pub fn get_responses_at_depth(positions: &[Position], search_depth: u64) -> Vec<Response> {
     let mut board: Board = Board::new();
     board.options.verbose = false;
     board.options.use_book = false;
@@ -89,7 +86,9 @@ pub fn get_responses_at_depth(
             .progress_chars("#>-"),
     );
     for position in positions {
-        board.set_state(&position.cells, position.current_player, 0, 0).unwrap();
+        board
+            .set_state(&position.cells, position.current_player, 0, 0)
+            .unwrap();
         if let Some((action, score)) = board.search_to_depth(search_depth, None) {
             let action = action | (search_depth << (3 * INDEX_WIDTH));
             responses.push(Response::new(position.to_owned(), action, score));
@@ -121,14 +120,17 @@ pub fn backtrack_responses(
     let responses_map: HashMap<[u8; 45], (u64, i64)> =
         HashMap::from_iter(responses.iter().map(|response| {
             (
-                response.position.cells.to_owned(), (response.action, response.score)
+                response.position.cells.to_owned(),
+                (response.action, response.score),
             )
         }));
 
     let lower_positions = get_positions(exploration_depth - 1);
     let mut lower_responses: Vec<Response> = vec![];
     for position in lower_positions {
-        board.set_state(&position.cells, position.current_player, 0, 0).unwrap();
+        board
+            .set_state(&position.cells, position.current_player, 0, 0)
+            .unwrap();
         let (cells, player, half_moves, full_moves) = board.get_state();
         let (actions, n_actions) = available_player_actions(&board.cells, board.current_player);
         let mut best_score = i64::MIN;
@@ -138,9 +140,8 @@ pub fn backtrack_responses(
             if board.is_win() {
                 best_score = MAX_SCORE;
                 best_action = action;
-                break
-            }
-            else {
+                break;
+            } else {
                 let &(_action, score) = responses_map.get(&board.cells).unwrap();
                 let score = -score;
                 if score > best_score {
@@ -158,7 +159,12 @@ pub fn backtrack_responses(
             best_score,
         ));
     }
-    println!("Responses calculated at new exploration depth {} and search depth {} in {:?}.", exploration_depth - 1, search_depth + 1, start.elapsed());
+    println!(
+        "Responses calculated at new exploration depth {} and search depth {} in {:?}.",
+        exploration_depth - 1,
+        search_depth + 1,
+        start.elapsed()
+    );
     lower_responses
 }
 
@@ -168,7 +174,9 @@ pub fn inspect_position(position: &Position) {
     board.options.use_book = false;
     board.init();
 
-    board.set_state(&position.cells, position.current_player, 0, 0).unwrap();
+    board
+        .set_state(&position.cells, position.current_player, 0, 0)
+        .unwrap();
     board.print();
     println!();
 }
@@ -179,7 +187,14 @@ pub fn inspect_response(response: &Response) {
     board.options.use_book = false;
     board.init();
 
-    board.set_state(&response.position.cells, response.position.current_player, 0, 0).unwrap();
+    board
+        .set_state(
+            &response.position.cells,
+            response.position.current_player,
+            0,
+            0,
+        )
+        .unwrap();
     board.print();
     println!("{}", board.current_player);
     let action_string = action_to_string(&board.cells, response.action);

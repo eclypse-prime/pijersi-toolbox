@@ -1,6 +1,13 @@
 use clap::Parser;
 
-use pijersi_toolbox::{actions::{backtrack_responses, get_positions, get_responses_at_depth, inspect_position, inspect_response}, args::{Cli, InspectMode, LoadMode, Mode}, io::{export_positions, export_responses, import_positions, import_responses}};
+use pijersi_toolbox::{
+    actions::{
+        backtrack_responses, get_positions, get_responses_at_depth, inspect_position,
+        inspect_response,
+    },
+    args::{Cli, InspectMode, LoadMode, Mode},
+    io::{export_positions, export_responses, import_positions, import_responses},
+};
 
 fn main() {
     rayon::ThreadPoolBuilder::new()
@@ -33,7 +40,8 @@ fn main() {
                     let exploration_depth = generate_backtracking_args.exploration_depth;
                     let output_path = generate_backtracking_args.output;
                     let responses = import_responses(&file_path);
-                    let responses = backtrack_responses(&responses, search_depth, exploration_depth);
+                    let responses =
+                        backtrack_responses(&responses, search_depth, exploration_depth);
                     export_responses(&responses, &output_path);
                 }
             }
@@ -42,16 +50,16 @@ fn main() {
             let file_path = inspect_args.path;
             match inspect_args.mode {
                 InspectMode::Positions => {
-                        let positions = import_positions(&file_path);
-                        for position in positions.iter().take(5) {
-                            inspect_position(position);
-                        }
+                    let positions = import_positions(&file_path);
+                    for position in positions.iter().take(5) {
+                        inspect_position(position);
+                    }
                 }
                 InspectMode::Responses => {
-                        let responses = import_responses(&file_path);
-                        for response in responses.iter().take(5) {
-                            inspect_response(response);
-                        }
+                    let responses = import_responses(&file_path);
+                    for response in responses.iter().take(5) {
+                        inspect_response(response);
+                    }
                 }
             }
         }

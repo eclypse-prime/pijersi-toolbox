@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use pijersi_rs::board::Board;
 
@@ -11,7 +11,10 @@ pub struct Position {
 
 impl Position {
     pub fn new(board: &Board) -> Position {
-        Position {cells: board.cells, current_player: board.current_player}
+        Position {
+            cells: board.cells,
+            current_player: board.current_player,
+        }
     }
 }
 
@@ -24,6 +27,10 @@ pub struct Response {
 
 impl Response {
     pub fn new(position: Position, action: u64, score: i64) -> Response {
-        Response {position, action, score}
+        Response {
+            position,
+            action,
+            score,
+        }
     }
 }

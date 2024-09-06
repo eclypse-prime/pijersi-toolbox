@@ -71,9 +71,12 @@ pub fn export_positions(positions: &[Position], save_path: &str, split: Option<u
                 writer.write_all(&encode_position(position)).unwrap();
             }
         }
-        println!("Positions saved in {} chunks in {:?}", n_files, start.elapsed());
-    }
-    else {
+        println!(
+            "Positions saved in {} chunks in {:?}",
+            n_files,
+            start.elapsed()
+        );
+    } else {
         let mut writer = BufWriter::new(File::create(save_path).unwrap());
         for position in positions {
             writer.write_all(&encode_position(position)).unwrap();
