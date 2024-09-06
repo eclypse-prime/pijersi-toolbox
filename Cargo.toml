@@ -9,5 +9,6 @@ bincode = "*"
 clap = {version = "*", features = ["derive"]}
 indicatif = "*"
 pijersi-rs = {path = "../pijersi-rs"}
+rayon = "*"
 serde = {version = "*", features = ["derive"]}
 serde_bytes = "*"

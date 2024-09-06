@@ -3,6 +3,11 @@ use clap::Parser;
 use pijersi_toolbox::{actions::{backtrack_responses, get_positions, get_responses_at_depth, inspect_position, inspect_response}, args::{Cli, InspectMode, LoadMode, Mode}, io::{export_positions, export_responses, import_positions, import_responses}};
 
 fn main() {
+    rayon::ThreadPoolBuilder::new()
+        .num_threads(8)
+        .build_global()
+        .unwrap();
+
     let args = Cli::parse();
 
     match args.mode {
