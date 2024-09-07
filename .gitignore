@@ -16,5 +16,4 @@ Cargo.lock
 .vscode
 
 # Generated data
-positions/
-responses/
+data/
