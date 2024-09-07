@@ -7,10 +7,8 @@ use indicatif::{ProgressBar, ProgressStyle};
 use pijersi_rs::{
     board::Board,
     logic::{movegen::available_player_actions, translate::action_to_string, INDEX_WIDTH},
-    search::eval::MAX_SCORE,
+    search::{eval::MAX_SCORE, openings::{Position, Response}},
 };
-
-use crate::structs::{Position, Response};
 
 pub fn get_positions(exploration_depth: u64) -> Vec<Position> {
     let mut board: Board = Board::new();
@@ -196,9 +194,9 @@ pub fn inspect_response(response: &Response) {
         )
         .unwrap();
     board.print();
-    println!("{}", board.current_player);
     let action_string = action_to_string(&board.cells, response.action);
-    println!("{action_string}");
+    let predicted_score = response.score;
+    println!("{action_string} {predicted_score}");
     board.play(response.action).unwrap();
     board.print();
     println!();

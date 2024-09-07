@@ -1,11 +1,12 @@
 use clap::Parser;
 
+use pijersi_rs::search::openings::{Position, Response};
 use pijersi_toolbox::{
     actions::{
         backtrack_responses, get_positions, get_responses_at_depth, inspect_position,
         inspect_response,
     },
-    args::{Cli, InspectMode, LoadMode, Mode},
+    args::{Cli, InspectMode, LoadMode, MergeMode, Mode},
     io::{export_positions, export_responses, import_positions, import_responses},
 };
 
@@ -61,6 +62,31 @@ fn main() {
                         inspect_response(response);
                     }
                 }
+            }
+        }
+        Mode::Merge(merge_args) => {
+            let base_file_path = merge_args.path;
+            match merge_args.mode {
+                MergeMode::Positions(merge_positions_args) => {
+                    let n_files = merge_positions_args.number;
+                    let output_path = merge_positions_args.output;
+                    let mut positions: Vec<Position> = vec![];
+                    for i in 0..n_files {
+                        let file_chunk_path = format!("{base_file_path}_{i}");
+                        positions.append(&mut import_positions(&file_chunk_path));
+                    }
+                    export_positions(&positions, &output_path, None);
+                },
+                MergeMode::Responses(merge_response_args) => {
+                    let n_files = merge_response_args.number;
+                    let output_path = merge_response_args.output;
+                    let mut responses: Vec<Response> = vec![];
+                    for i in 0..n_files {
+                        let file_chunk_path = format!("{base_file_path}_{i}");
+                        responses.append(&mut import_responses(&file_chunk_path));
+                    }
+                    export_responses(&responses, &output_path);
+                },
             }
         }
     }

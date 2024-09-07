@@ -5,8 +5,7 @@ use std::{
 };
 
 use bincode::{deserialize, serialize};
-
-use crate::structs::{Position, Response};
+use pijersi_rs::search::openings::{Position, Response};
 
 fn decode_position(file: &mut BufReader<File>) -> Option<Position> {
     let mut bytes: [u8; 54] = [0; 54];

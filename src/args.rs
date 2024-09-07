@@ -8,9 +8,10 @@ pub struct Cli {
 
 #[derive(Subcommand, Debug)]
 pub enum Mode {
-    New(GeneratePositionArgs),
+    New(GeneratePositionsArgs),
     Load(LoadArgs),
     Inspect(InspectArgs),
+    Merge(MergeArgs),
 }
 
 #[derive(Args, Debug)]
@@ -27,9 +28,16 @@ pub struct InspectArgs {
     pub mode: InspectMode,
 }
 
+#[derive(Args, Debug)]
+pub struct MergeArgs {
+    pub path: String,
+    #[command(subcommand)]
+    pub mode: MergeMode,
+}
+
 #[derive(Subcommand, Debug)]
 pub enum LoadMode {
-    Positions(GenerateResponseArgs),
+    Positions(GenerateResponsesArgs),
     Responses(GenerateBacktrackingArgs),
 }
 
@@ -39,8 +47,14 @@ pub enum InspectMode {
     Responses,
 }
 
+#[derive(Subcommand, Debug)]
+pub enum MergeMode {
+    Positions(MergePositionsArgs),
+    Responses(MergeResponsesArgs),
+}
+
 #[derive(Args, Debug)]
-pub struct GeneratePositionArgs {
+pub struct GeneratePositionsArgs {
     #[arg(short = 'e', long)]
     pub exploration_depth: u64,
     #[arg(short = 'o', long)]
@@ -50,7 +64,7 @@ pub struct GeneratePositionArgs {
 }
 
 #[derive(Args, Debug)]
-pub struct GenerateResponseArgs {
+pub struct GenerateResponsesArgs {
     #[arg(short = 's', long)]
     pub search_depth: u64,
     #[arg(short = 'o', long)]
@@ -65,4 +79,20 @@ pub struct GenerateBacktrackingArgs {
     pub search_depth: u64,
     #[arg(short = 'o', long)]
     pub output: String,
+}
+
+#[derive(Args, Debug)]
+pub struct MergePositionsArgs {
+    #[arg(short = 'o', long)]
+    pub output: String,
+    #[arg(short = 'n', long)]
+    pub number: usize,
+}
+
+#[derive(Args, Debug)]
+pub struct MergeResponsesArgs {
+    #[arg(short = 'o', long)]
+    pub output: String,
+    #[arg(short = 'n', long)]
+    pub number: usize,
 }
