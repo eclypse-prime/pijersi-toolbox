@@ -15,5 +15,8 @@ Cargo.lock
 
 .vscode
 
+# Vendor data
+vendor/
+
 # Generated data
 data/
