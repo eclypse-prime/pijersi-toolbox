@@ -1,8 +1,8 @@
-use std::{fs::File, io::{Read, Write}, time::Instant};
+use std::{fs::File, io::{Read, Write}};
 
 use clap::Parser;
 
-use miniz_oxide::deflate::{compress_to_vec, compress_to_vec_zlib};
+use miniz_oxide::{deflate::compress_to_vec, inflate::decompress_to_vec};
 use pijersi_rs::search::openings::{Position, Response};
 use pijersi_toolbox::{
     actions::{
@@ -100,6 +100,15 @@ fn main() {
             let compressed_bytes = compress_to_vec(&bytes, 10);
             let mut output_file = File::create(output_path).unwrap();
             output_file.write_all(&compressed_bytes).unwrap();
+        }
+        Mode::Decompress(decompress_args) => {
+            let file_path = decompress_args.path;
+            let output_path = decompress_args.output;
+            let mut compressed_bytes: Vec<u8> = vec![];
+            File::open(file_path).unwrap().read_to_end(&mut compressed_bytes).unwrap();
+            let decompressed_bytes = decompress_to_vec(&compressed_bytes).unwrap();
+            let mut output_file = File::create(output_path).unwrap();
+            output_file.write_all(&decompressed_bytes).unwrap();
         }
     }
 }

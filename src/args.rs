@@ -13,6 +13,7 @@ pub enum Mode {
     Inspect(InspectArgs),
     Merge(MergeArgs),
     Compress(CompressArgs),
+    Decompress(DecompressArgs),
 }
 
 #[derive(Args, Debug)]
@@ -100,6 +101,14 @@ pub struct MergeResponsesArgs {
 
 #[derive(Args, Debug)]
 pub struct CompressArgs {
+    pub path: String,
+    #[arg(short = 'o', long)]
+    pub output: String,
+}
+
+
+#[derive(Args, Debug)]
+pub struct DecompressArgs {
     pub path: String,
     #[arg(short = 'o', long)]
     pub output: String,
