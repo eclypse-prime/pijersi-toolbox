@@ -8,6 +8,7 @@ anyhow = "*"
 bincode = "*"
 clap = {version = "*", features = ["derive"]}
 indicatif = "*"
+miniz_oxide = "*"
 pijersi-rs = {path = "../pijersi-rs"}
 rayon = "*"
 serde = {version = "*", features = ["derive"]}
