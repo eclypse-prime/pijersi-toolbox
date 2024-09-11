@@ -7,7 +7,11 @@ use indicatif::{ProgressBar, ProgressStyle};
 use pijersi_rs::{
     board::Board,
     logic::{movegen::available_player_actions, translate::action_to_string, INDEX_WIDTH},
-    search::{eval::MAX_SCORE, openings::{Position, Response}},
+    search::{
+        alphabeta::search_iterative,
+        eval::MAX_SCORE,
+        openings::{Position, Response},
+    },
 };
 
 pub fn get_positions(exploration_depth: u64) -> Vec<Position> {
@@ -150,6 +154,11 @@ pub fn backtrack_responses(
             board
                 .set_state(&cells, player, half_moves, full_moves)
                 .unwrap();
+        }
+        if best_score <= -MAX_SCORE {
+            (best_action, _) =
+                search_iterative(&cells, player, search_depth + 1, None, false).unwrap();
+            best_action |= (search_depth + 1) << (3 * INDEX_WIDTH);
         }
         lower_responses.push(Response::new(
             position,

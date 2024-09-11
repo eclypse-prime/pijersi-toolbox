@@ -5,6 +5,7 @@ use std::{
 };
 
 use bincode::{deserialize, serialize};
+use miniz_oxide::{deflate::compress_to_vec, inflate::decompress_to_vec};
 use pijersi_rs::search::openings::{Position, Response};
 
 fn decode_position(file: &mut BufReader<File>) -> Option<Position> {
@@ -112,4 +113,46 @@ pub fn export_responses(responses: &[Response], save_path: &str) {
         file.write_all(&encode_response(response)).unwrap();
     }
     println!("Responses saved in {:?}.", start.elapsed());
+}
+
+pub fn compress_file(input_path: &str, output_path: &str) {
+    let mut bytes: Vec<u8> = vec![];
+    println!("Loading file {input_path}...");
+    let start = Instant::now();
+    File::open(input_path).unwrap().read_to_end(&mut bytes).unwrap();
+    println!("File loaded in {:?}", start.elapsed());
+    
+    let old_size = bytes.len();
+    println!("Compressing {}kB...", old_size as f64 / 1024.);
+    let start = Instant::now();
+    let compressed_bytes = compress_to_vec(&bytes, 10);
+    let new_size = compressed_bytes.len();
+    println!("Compressed to {}kB in {:?} (compression ratio: {})", new_size as f64 / 1024., start.elapsed(), new_size as f64 / old_size as f64);
+    
+    println!("Saving to {input_path}...");
+    let start = Instant::now();
+    let mut output_file = File::create(output_path).unwrap();
+    output_file.write_all(&compressed_bytes).unwrap();
+    println!("File saved in {:?}", start.elapsed());
+}
+
+pub fn decompress_file(input_path: &str, output_path: &str) {
+    let mut bytes: Vec<u8> = vec![];
+    println!("Loading file {input_path}...");
+    let start = Instant::now();
+    File::open(input_path).unwrap().read_to_end(&mut bytes).unwrap();
+    println!("File loaded in {:?}", start.elapsed());
+    
+    let old_size = bytes.len();
+    println!("Deompressing {}kB...", old_size as f64 / 1024.);
+    let start = Instant::now();
+    let compressed_bytes = decompress_to_vec(&bytes).unwrap();
+    let new_size = compressed_bytes.len();
+    println!("Deompressed to {}kB in {:?} (decompression ratio: {})", new_size as f64 / 1024., start.elapsed(), new_size as f64 / old_size as f64);
+    
+    println!("Saving to {input_path}...");
+    let start = Instant::now();
+    let mut output_file = File::create(output_path).unwrap();
+    output_file.write_all(&compressed_bytes).unwrap();
+    println!("File saved in {:?}", start.elapsed());
 }
