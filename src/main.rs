@@ -1,8 +1,6 @@
-use std::{fs::File, io::{Read, Write}};
 
 use clap::Parser;
 
-use miniz_oxide::inflate::decompress_to_vec;
 use pijersi_rs::search::openings::{Position, Response};
 use pijersi_toolbox::{
     actions::{
